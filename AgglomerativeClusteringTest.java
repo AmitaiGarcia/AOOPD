@@ -1,4 +1,3 @@
-package Week05Generics.Ex5Clustering;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.Set;
@@ -21,8 +20,7 @@ public class AgglomerativeClusteringTest {
 			Set<TwoDPoint> points = TwoDPoint.readClusterableSet(POINTS_PATH);
 			Set<Set<TwoDPoint>> pointsClusterSet = twoDPointClustering.clusterSet(points);
 			System.out.println("The number of 2d point clusters is: " + pointsClusterSet.size());
-		}
-		else {
+		} else {
 			AgglomerativeClustering<BitArray> bitArrayClustering = new AgglomerativeClustering(threshold);
 			Set<BitArray> bitArrays = BitArray.readClusterableSet(BITARRAYS_PATH);
 			Set<Set<BitArray>> bitArrayClusterSet = bitArrayClustering.clusterSet(bitArrays);

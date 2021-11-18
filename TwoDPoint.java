@@ -1,25 +1,44 @@
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Collections;
+import java.util.Scanner;
+import java.io.File;
 
-public class TwoDPoint implements Clusterable<TwoDPoint>{
+import javax.swing.text.html.parser.ParserDelegator;
+
+public class TwoDPoint implements Clusterable<TwoDPoint> {
 	double x;
 	double y;
-	public TwoDPoint(String str){
-		// TODO: Complete
-	}
-	public TwoDPoint(double x, double y) {
-		// TODO: Complete
-	}
-	@Override
-	public double distance(TwoDPoint other) {
-		// TODO: Complete
-		return 0;
+
+	public TwoDPoint(String str) {
+		String[] points = str.split(",", 0);
+		this.x = Double.parseDouble(points[0]);
+		this.y = Double.parseDouble(points[1]);
 	}
 
-	public static Set<TwoDPoint> readClusterableSet(String path) throws IOException{
-		// TODO: Complete
-		return null;
+	public TwoDPoint(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	@Override
+	public double distance(TwoDPoint other) {
+		return Math.sqrt(((other.x - this.x) * (other.x - this.x)) + ((other.y - this.y) * (other.y - this.y)));
+	}
+
+	public static Set<TwoDPoint> readClusterableSet(String path) throws IOException {
+		File file = new File(path);
+		Scanner scanner = new Scanner(file);
+		Set clusters = Collections.emptySet();
+
+		while (scanner.hasNextLine()) {
+			String line = scanner.nextLine();
+			clusters.add(new TwoDPoint(line));
+		}
+
+		scanner.close();
+		return clusters;
 	}
 
 	@Override
