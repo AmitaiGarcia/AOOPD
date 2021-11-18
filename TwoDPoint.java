@@ -1,11 +1,10 @@
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Collections;
-import java.util.Scanner;
-import java.io.File;
+import java.util.stream.Collectors;
 
-import javax.swing.text.html.parser.ParserDelegator;
 
 public class TwoDPoint implements Clusterable<TwoDPoint> {
 	double x;
@@ -28,16 +27,9 @@ public class TwoDPoint implements Clusterable<TwoDPoint> {
 	}
 
 	public static Set<TwoDPoint> readClusterableSet(String path) throws IOException {
-		File file = new File(path);
-		Scanner scanner = new Scanner(file);
-		Set clusters = Collections.emptySet();
+		Set<TwoDPoint> clusters = Files.lines(Paths.get(path))
+		.map(TwoDPoint::new).collect(Collectors.toSet());
 
-		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine();
-			clusters.add(new TwoDPoint(line));
-		}
-
-		scanner.close();
 		return clusters;
 	}
 

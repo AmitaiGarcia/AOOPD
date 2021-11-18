@@ -4,8 +4,8 @@ import java.util.Set;
 
 // A simple validation class for agglomerative clustering.
 public class AgglomerativeClusteringTest {
-	private static final String POINTS_PATH = "points.txt";
-	private static final String BITARRAYS_PATH = "bitArrays.txt";
+	private static final String POINTS_PATH = "datasets/points.txt";
+	private static final String BITARRAYS_PATH = "datasets/bitArrays.txt";
 
 	public static void main(String[] args) throws IOException {
 		Scanner scanner = new Scanner(System.in);
@@ -26,5 +26,6 @@ public class AgglomerativeClusteringTest {
 			Set<Set<BitArray>> bitArrayClusterSet = bitArrayClustering.clusterSet(bitArrays);
 			System.out.println("The number of bitArray clusters is: " + bitArrayClusterSet.size());
 		}
+		scanner.close();
 	}
 }

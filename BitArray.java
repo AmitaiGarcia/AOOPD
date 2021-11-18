@@ -1,30 +1,33 @@
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class BitArray implements Clusterable<BitArray> {
 	private ArrayList<Boolean> bits;
 
 	public BitArray(String str) {
-		String[] vals = str.split(",", 0);
-		for (int i = 0; i < vals.length; ++i) {
-			bits.add(Boolean.parseBoolean(vals[i]));
-		}
+		List<Boolean> tempList = Arrays.stream(str.split(","))
+		.map(Boolean::parseBoolean)
+		.collect(Collectors.toList());
+		
+		bits = new ArrayList<Boolean>(tempList);
 
 	}
 
-	public BitArray(boolean[] newBits) {
-		for (int i = 0; i < newBits.length; ++i) {
-			bits.add(newBits[i]);
-		}
+	public BitArray(Boolean[] bits) {
+		List<Boolean> tempList = Arrays.asList(bits);
+		this.bits = new ArrayList<Boolean>(tempList);
 	}
 
 	@Override
-	public double distance(BitArray other) {
+	public double distance(BitArray other) { //TODO: streams
 		double count = 0;
 		for (int i = 0; i < this.bits.size() || i < other.bits.size(); ++i) {
 			if (this.bits.get(i) != other.bits.get(i)) {
@@ -34,10 +37,10 @@ public class BitArray implements Clusterable<BitArray> {
 		return count;
 	}
 
-	public static Set<BitArray> readClusterableSet(String path) throws IOException {
+	public static Set<BitArray> readClusterableSet(String path) throws IOException {//TODO:streams
 		File file = new File(path);
 		Scanner scanner = new Scanner(file);
-		Set clusters = Collections.emptySet();
+		Set<BitArray> clusters = Collections.emptySet();
 		int max = 0;
 
 		while (scanner.hasNextLine()) {
