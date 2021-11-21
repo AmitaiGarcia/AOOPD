@@ -1,13 +1,20 @@
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class BitArray implements Clusterable<BitArray> {
 	private ArrayList<Boolean> bits;
@@ -27,38 +34,30 @@ public class BitArray implements Clusterable<BitArray> {
 	}
 
 	@Override
-	public double distance(BitArray other) { //TODO: streams
-		double count = 0;
-		for (int i = 0; i < this.bits.size() || i < other.bits.size(); ++i) {
-			if (this.bits.get(i) != other.bits.get(i)) {
-				count++;
-			}
-		}
-		return count;
+	public double distance(BitArray other) {
+		return IntStream.range(0, bits.size()) 
+				.filter(i -> !bits.get(i).equals(other.bits.get(i))) 
+				.count();
 	}
 
-	public static Set<BitArray> readClusterableSet(String path) throws IOException {//TODO:streams
-		File file = new File(path);
-		Scanner scanner = new Scanner(file);
-		Set<BitArray> clusters = Collections.emptySet();
-		int max = 0;
-
-		while (scanner.hasNextLine()) {
-			String line = scanner.nextLine();
-			String[] numBits = line.split(",", 0);
-
-			if (numBits.length > max) {
-				max = numBits.length;
-				clusters = Collections.emptySet();
+	public int size() {
+		return bits.size();
+	}
+	
+	public static Set<BitArray> readBitArrays(String path) throws IOException {
+		try (Stream<String> lines = Files.lines(Paths.get(path))) {
+		
+			List<BitArray> arrays =
+					new ArrayList<>(lines.map(BitArray::new).collect(Collectors.toList()));
+			
+			Optional<BitArray> longest = arrays.stream().max(Comparator.comparing(BitArray::size));
+			if (longest.isPresent()) {
+				
+				return arrays.stream().filter(a -> a.size() == longest.get().size())
+						.collect(Collectors.toSet()); 
 			}
-
-			if (numBits.length == max) {
-				clusters.add(new BitArray(line));
-			}
+			return new HashSet<>();
 		}
-
-		scanner.close();
-		return clusters;
 	}
 
 	@Override
