@@ -1,3 +1,4 @@
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.*;
@@ -33,7 +34,7 @@ public class AgglomerativeClustering<T extends Clusterable<T>> implements Cluste
 	}
 
 	public Set<Set<T>> clusterSet(Set<T> elements) {
-		Set<Set<T>> clusters = elements.stream().map(Set::of).collect(Collectors.toSet());
+		Set<Set<T>> clusters = elements.stream().map(elem -> Collections.singleton(elem)).collect(Collectors.toSet());
 
 		while (clusters.size() != 1) {
 
