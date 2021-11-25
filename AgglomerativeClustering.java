@@ -1,22 +1,19 @@
-
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.stream.*;
 
 public class AgglomerativeClustering<T extends Clusterable<T>> implements Clustering<T> {
 	double threshold;
-	private class PairClusterable implements Comparable<PairClusterable>{
-		T clusterableA;
-		T clusterableB;
+
+	private class PairClusterable implements Comparable<PairClusterable> {
+		Set<T> clusterableA;
+		Set<T> clusterableB;
 		double distance;
 
-		PairClusterable( T clusterableA, T clusterableB){
+		PairClusterable(Set<T> clusterableA, Set<T> clusterableB) {
 			this.clusterableA = clusterableA;
 			this.clusterableB = clusterableB;
-			this.distance = clusterableA.distance(clusterableB); // find distance between 2 sets
+			this.distance = setDistance(clusterableA, clusterableB); // find distance between 2 sets
 		}
 
 		@Override
@@ -24,35 +21,33 @@ public class AgglomerativeClustering<T extends Clusterable<T>> implements Cluste
 			return Double.compare(this.distance, other.distance);
 		}
 	}
+
 	public AgglomerativeClustering(double threshold) {
 		this.threshold = threshold;
 	}
 
+	public double setDistance(Set<T> set1, Set<T> set2) {
+
+		return set1.stream().flatMap(x -> set2.stream().map(x::distance)).min(Double::compare).get();
+
+	}
+
 	public Set<Set<T>> clusterSet(Set<T> elements) {
 		Set<Set<T>> clusters = elements.stream().map(Set::of).collect(Collectors.toSet());
-		
+
 		while (clusters.size() != 1) {
 
-
-		Set<T> s= clusters.stream()
-		.flatMap(elem -> elem.stream())
-		.collect(Collectors.toSet());
-
-		PairClusterable closestPair = s.stream()
-					.map(elem -> s.stream()
-					.filter(other -> !elem.equals(other))
-					.map(other -> new PairClusterable(elem, other))
-					.min(PairClusterable::compareTo).get())
+			PairClusterable ClosestSets = clusters.stream()
+					.map(set1 -> clusters.stream().filter(set2 -> !set1.equals(set2))
+							.map(set2 -> new PairClusterable(set1, set2)).min(PairClusterable::compareTo).get())
 					.min(PairClusterable::compareTo).get();
 
+			Set<T> cluster1 = new HashSet<>();
+			cluster1.addAll(ClosestSets.clusterableA);
+			Set<T> cluster2 = new HashSet<>();
+			cluster2.addAll(ClosestSets.clusterableB);
 
-					
-					Set<T> cluster1 = new HashSet<>();
-					cluster1.add(closestPair.clusterableA);
-					Set<T> cluster2 = new HashSet<>();
-					cluster2.add(closestPair.clusterableB);
-								
-			if (closestPair.distance > threshold) {
+			if (ClosestSets.distance > threshold) {
 				return clusters;
 			}
 
@@ -62,6 +57,6 @@ public class AgglomerativeClustering<T extends Clusterable<T>> implements Cluste
 			clusters.add(cluster1);
 
 		}
-	 return clusters;
+		return clusters;
 	}
 }
